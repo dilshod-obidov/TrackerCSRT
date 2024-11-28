@@ -1,5 +1,6 @@
 import cv2
 import argparse
+import os
 
 def create_tracker(tracker_type):
     if tracker_type == "BOOSTING":
@@ -29,7 +30,12 @@ def main(source, tracker_type):
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = int(cap.get(cv2.CAP_PROP_FPS))
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    out = cv2.VideoWriter('output.mp4', fourcc, fps, (width, height))
+
+    output_dir = 'output'
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    out = cv2.VideoWriter(f'output/{tracker_type}_{os.path.basename(source)}_output.mp4', fourcc, fps, (width, height))
 
     bbox = cv2.selectROI("Select target to track", frame, False, False)
     cv2.destroyWindow("Select target to track")
