@@ -35,7 +35,11 @@ def main(source, tracker_type):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    out = cv2.VideoWriter(f'output/{tracker_type}_{os.path.basename(source)}_output.mp4', fourcc, fps, (width, height))
+
+    if source in [0, 1, 2, 3]:
+        out = cv2.VideoWriter(f'output/{tracker_type}_webcam_output.mp4', fourcc, fps, (width, height))
+    else:
+        out = cv2.VideoWriter(f'output/{tracker_type}_{os.path.basename(source)}_output.mp4', fourcc, fps, (width, height)) 
 
     bbox = cv2.selectROI("Select target to track", frame, False, False)
     cv2.destroyWindow("Select target to track")
