@@ -1,5 +1,4 @@
-# TrackerCSRT
-OpenCV TrackerCSRT
+# OpenCV Trackers
 
 
 ## Setup
