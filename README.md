@@ -11,6 +11,6 @@ pip install -r requirements.txt
 
 ## Run
 ```bash
-python3 main.py --source video.mp4
-                         0 # for webcam
+python3 main.py --source video.mp4 --tracker CSRT
+                                             BOOSTING 
 ```
