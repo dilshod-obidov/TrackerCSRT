@@ -1,7 +1,18 @@
 import cv2
 import argparse
 
-def main(source):
+def create_tracker(tracker_type):
+    if tracker_type == "BOOSTING":
+        return cv2.legacy.TrackerBoosting_create()
+    elif tracker_type == "CSRT":
+        if hasattr(cv2, 'legacy'):
+            return cv2.legacy.TrackerCSRT_create()
+        else:
+            return cv2.TrackerCSRT_create()
+    else:
+        raise ValueError(f"Unsupported tracker type: {tracker_type}")
+
+def main(source, tracker_type):
     cap = cv2.VideoCapture(source)
 
     if not cap.isOpened():
@@ -23,11 +34,7 @@ def main(source):
     bbox = cv2.selectROI("Select target to track", frame, False, False)
     cv2.destroyWindow("Select target to track")
 
-    if hasattr(cv2, 'legacy'):
-        tracker = cv2.legacy.TrackerCSRT_create()
-    else:
-        tracker = cv2.TrackerCSRT_create()
-
+    tracker = create_tracker(tracker_type)
     success = tracker.init(frame, bbox)
 
     while True:
@@ -45,7 +52,7 @@ def main(source):
             cv2.putText(frame, "Tracking failed!", (50, 80), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2)
 
         out.write(frame)
-        cv2.imshow("Object Tracking", frame)
+        cv2.imshow(f"{tracker_type} Tracking", frame)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
@@ -57,8 +64,11 @@ def main(source):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Object Tracking using OpenCV")
     parser.add_argument("--source", type=str, required=True, help="Video source (file path or webcam index)")
+    parser.add_argument("--tracker", type=str, required=True, choices=["BOOSTING", "CSRT"], help="Tracking algorithm to use")
     args = parser.parse_args()
+
     source = args.source
     if source.isdigit():
         source = int(source)
-    main(source)
+
+    main(source, args.tracker)
