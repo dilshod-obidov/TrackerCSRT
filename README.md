@@ -18,4 +18,4 @@ python3 main.py --source videos/video.mp4 --tracker CSRT
 ## Webcam demo
 Here is an example output video using the CSRT tracker:
 
-[CSRT Tracker Output](videos/CSRT_webcam_output.mp4)
+[CSRT Tracker Output](CSRT_webcam_output.gif)
