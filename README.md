@@ -12,4 +12,5 @@ pip install -r requirements.txt
 ```bash
 python3 main.py --source videos/video.mp4 --tracker CSRT
                                              BOOSTING 
+                                             MIL
 ```
