@@ -10,6 +10,11 @@ def create_tracker(tracker_type):
             return cv2.legacy.TrackerCSRT_create()
         else:
             return cv2.TrackerCSRT_create()
+    elif tracker_type == "MIL":
+        if hasattr(cv2, 'legacy'):
+            return cv2.legacy.TrackerMIL_create()
+        else:
+            return cv2.TrackerMIL_create()
     else:
         raise ValueError(f"Unsupported tracker type: {tracker_type}")
 
@@ -47,6 +52,11 @@ def main(source, tracker_type):
     tracker = create_tracker(tracker_type)
     success = tracker.init(frame, bbox)
 
+    start_time = cv2.getTickCount()  # Start time for overall FPS calculation
+
+    frame_count = 0
+    fps_display_time = 0
+
     while True:
         ret, frame = cap.read()
         if not ret:
@@ -61,11 +71,30 @@ def main(source, tracker_type):
         else:
             cv2.putText(frame, "Tracking failed!", (50, 80), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2)
 
+        frame_count += 1
+        current_time = cv2.getTickCount()
+        elapsed_time = (current_time - start_time) / cv2.getTickFrequency()  # Convert to seconds
+
+        if elapsed_time - fps_display_time >= 1.0:
+            fps = frame_count / elapsed_time
+            fps_display_time = elapsed_time
+            print(f"FPS: {fps:.2f}")
+            print(f"Frame count: {frame_count}")
+            print(f"Elapsed time: {elapsed_time:.2f} seconds")
+
+        # Change the color of the FPS text to blue (BGR format)
+        cv2.putText(frame, f"FPS: {fps:.2f}", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 0, 0), 2)
+
         out.write(frame)
         cv2.imshow(f"{tracker_type} Tracking", frame)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+
+    end_time = cv2.getTickCount()  # End time for overall FPS calculation
+    overall_elapsed_time = (end_time - start_time) / cv2.getTickFrequency()  # Convert to seconds
+    overall_fps = frame_count / overall_elapsed_time
+    print(f"Overall FPS: {overall_fps:.2f}")
 
     cap.release()
     out.release()
@@ -74,8 +103,8 @@ def main(source, tracker_type):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Object Tracking using OpenCV")
     parser.add_argument("--source", type=str, required=True, help="Video source (file path or webcam index)")
-    parser.add_argument("--tracker", type=str, required=True, choices=["BOOSTING", "CSRT"], help="Tracking algorithm to use")
-    args = parser.parse_args()
+    parser.add_argument("--tracker", type=str, required=True, choices=["BOOSTING", "CSRT", "MIL"], help="Tracking algorithm to use")
+    args = parser.parse_args()  # Corrected method name
 
     source = args.source
     if source.isdigit():
