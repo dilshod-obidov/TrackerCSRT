@@ -10,6 +10,6 @@ pip install -r requirements.txt
 
 ## Run
 ```bash
-python3 main.py --source video.mp4 --tracker CSRT
+python3 main.py --source videos/video.mp4 --tracker CSRT
                                              BOOSTING 
 ```
